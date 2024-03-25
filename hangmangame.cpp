@@ -16,24 +16,12 @@ void HangmanGame::startGame()
     usedLetters.clear();
     attemptsLeft = maxAttempts;
     displayGameStatus();
-    gameLoop();
+    // Ne pas appeler gameLoop() ici, cela devrait être géré par les signaux et les slots
 }
 
 void HangmanGame::gameLoop()
 {
-    while (attemptsLeft > 0 && hiddenWord.contains('_')) {
-        QString guess = askForGuess();
-        processGuess(guess);
-        displayGameStatus();
-    }
-
-    if (attemptsLeft == 0) {
-        qDebug() << "You lose! The word was:" << currentWord;
-    } else {
-        qDebug() << "Congratulations! You guessed the word:" << currentWord;
-    }
-
-    QCoreApplication::quit();
+    // Ne plus utiliser de boucle, la logique de jeu sera gérée par les signaux et les slots
 }
 
 void HangmanGame::displayGameStatus()
@@ -41,14 +29,6 @@ void HangmanGame::displayGameStatus()
     qDebug() << "Word:" << hiddenWord;
     qDebug() << "Attempts left:" << attemptsLeft;
     qDebug() << "Used letters:" << usedLetters.values().join(',');
-}
-
-QString HangmanGame::askForGuess()
-{
-    QTextStream qtin(stdin);
-    qDebug() << "Enter your guess:";
-    QString guess = qtin.readLine().toUpper().trimmed();
-    return guess;
 }
 
 void HangmanGame::processGuess(const QString &guess)
@@ -74,11 +54,7 @@ void HangmanGame::processGuess(const QString &guess)
     } else {
         --attemptsLeft;
     }
-}
 
-void HangmanGame::processGuess(const QString &guess)
-{
-    // Mettez à jour le mot caché
     emit hiddenWordUpdated(hiddenWord);
+    emit usedLettersUpdated(usedLetters.values().join(','));
 }
-

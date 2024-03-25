@@ -14,14 +14,14 @@ public:
     HangmanGame(QObject *parent = nullptr);
 
     void startGame();
+    void processGuess(const QString &guess); // Déplacer la déclaration dans la section public
 
 private slots:
-            void gameLoop();
+    void gameLoop();
 
 private:
     void displayGameStatus();
     QString askForGuess();
-    void processGuess(const QString &guess);
 
     QStringList words;
     QString currentWord;
@@ -32,6 +32,7 @@ private:
 
 signals:
     void hiddenWordUpdated(QString word);
+    void usedLettersUpdated(const QString letters);
 
 };
 

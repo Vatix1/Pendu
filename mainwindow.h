@@ -1,3 +1,5 @@
+// mainwindow.h
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
@@ -11,15 +13,16 @@ QT_END_NAMESPACE
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-public slots:
-            void updateHiddenWord(QString word);
 
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 private slots:
-            void on_startButton_clicked();
+    void on_startButton_clicked();
+    void on_validateButton_clicked();
+    void updateUsedLetters(const QString &letters);
+    void updateHiddenWord(QString word);
 
 private:
     Ui::MainWindow *ui;
