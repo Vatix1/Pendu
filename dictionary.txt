@@ -20,11 +20,8 @@ site web
 serveur
 client
 réseau
-base de données
 requête
-algorithme génétique
-apprentissage automatique
-intelligence artificielle
+algorithme
 blockchain
 cryptographie
 sécurité
@@ -39,7 +36,6 @@ CSS
 JavaScript
 Python
 Java
-C++
 PHP
 Ruby
 Swift
