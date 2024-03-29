@@ -1,44 +1,142 @@
-// mainwindow.cpp
-
+#include "dataManager.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "hangmangame.h"
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+#include <QFile>
+#include <QFileDialog>
+
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
-    hangmanGame = new HangmanGame(this);
+    QString path = QFileDialog::getOpenFileName(this, tr("Open Dictionary File"));
+    if ( !path.isNull() )
+    {
+        dataManager = new DataManager(path);
+        dataManager->getNewWord();
+    }
 
-    // Connecter le signal de HangmanGame au slot de MainWindow
-    connect(hangmanGame, &HangmanGame::hiddenWordUpdated, this, &MainWindow::updateHiddenWord);
-    connect(hangmanGame, &HangmanGame::usedLettersUpdated, this, &MainWindow::updateUsedLetters);
+    ui->setupUi(this);
+
+    scene = new QGraphicsScene();
+
+    font = new QFont("Courier");
+    font->setStyleHint(QFont::TypeWriter);
+    font->setPointSize(42);
+    font->setUnderline(true);
+    scene->addText(dataManager->getDisplayWord(), *font);
+
+    ui->graphicsView->setScene(scene);
+
+    redrawNumAttempts();
+    redrawNumAttemptsLeft();
 }
 
-void MainWindow::updateHiddenWord(QString word)
+MainWindow::MainWindow(const QString& path, QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow)
 {
-    ui->hiddenWordLabel->setText(word);
+    dataManager = new DataManager(path);
+    dataManager->getNewWord();
+
+    ui->setupUi(this);
+
+    scene = new QGraphicsScene();
+
+    font = new QFont("Courier");
+    font->setStyleHint(QFont::TypeWriter);
+    font->setPointSize(42);
+    font->setUnderline(true);
+    scene->addText(dataManager->getDisplayWord(), *font);
+
+    ui->graphicsView->setScene(scene);
+
+    redrawNumAttempts();
+    redrawNumAttemptsLeft();
 }
 
 MainWindow::~MainWindow()
 {
+    delete font;
+    delete scene;
     delete ui;
+    delete dataManager;
 }
 
-void MainWindow::on_startButton_clicked()
+void MainWindow::on_buttonEnter_clicked()
 {
-    hangmanGame->startGame();
+    on_inputChar_returnPressed();
 }
 
-void MainWindow::on_validateButton_clicked()
+void MainWindow::on_inputChar_returnPressed()
 {
-    QString guess = ui->guessLineEdit->text().toUpper().trimmed(); // Récupérer la lettre saisie
-    ui->guessLineEdit->clear(); // Effacer le texte de la ligne de saisie
-    hangmanGame->processGuess(guess); // Traiter la lettre saisie
+    if (!dataManager->hasGivenUp())
+    {
+        if (ui->inputChar->text() != "")
+        {
+            QChar input = ui->inputChar->text().at(0);
+            ui->attemptedChars->setText(input);
+            update(input);
+
+            ui->inputChar->setText("");
+        }
+    }
 }
 
-void MainWindow::updateUsedLetters(const QString &letters)
+void MainWindow::on_buttonNewWord_clicked()
 {
-    ui->usedLettersLabel->setText("Lettres déjà utilisées : " + letters);
+    dataManager->reset();
+    scene->clear();
+    scene->addText(dataManager->getDisplayWord(), *font);
+    ui->attemptedChars->setText("");
+    ui->inputChar->setText("");
+    redrawNumAttempts();
+    redrawNumAttemptsLeft();
+}
+
+void MainWindow::on_buttonResign_clicked()
+{
+    dataManager->giveUp();
+    redrawWord();
+}
+
+void MainWindow::on_buttonHint_clicked()
+{
+    dataManager->getHint();
+    redrawAttemptedCharBox();
+    redrawWord();
+}
+
+void MainWindow::update(QChar input)
+{
+    if (!dataManager->hasGivenUp())
+    {
+        dataManager->charAdd(input);
+        redrawAttemptedCharBox();
+        redrawWord();
+        redrawNumAttempts();
+        redrawNumAttemptsLeft();
+    }
+}
+
+void MainWindow::redrawAttemptedCharBox()
+{
+    ui->attemptedChars->setText(dataManager->getAttemptedLetters());
+}
+
+void MainWindow::redrawWord()
+{
+    scene->clear();
+    scene->addText(dataManager->getDisplayWord(), *font);
+}
+
+void MainWindow::redrawNumAttempts()
+{
+    ui->labelNumAttempts->setText("Total des tentatives: " + QString::number(dataManager->getNumAttempts()));
+
+}
+
+void MainWindow::redrawNumAttemptsLeft()
+{
+    ui->labelAttemptsLeft->setText("Tentatives restantes: " + QString::number(dataManager->getAttemptsLeft()));
 }

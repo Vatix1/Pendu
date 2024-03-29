@@ -1,0 +1,50 @@
+programmation
+algorithme
+variable
+fonction
+boucle
+condition
+débogage
+compilateur
+interpréteur
+langage
+aléatoire
+pointeur
+structure
+classe
+objet
+fichier
+système
+navigateur
+site web
+serveur
+client
+réseau
+base de données
+requête
+algorithme génétique
+apprentissage automatique
+intelligence artificielle
+blockchain
+cryptographie
+sécurité
+hackeur
+virus
+pare-feu
+protocole
+adresse IP
+URL
+HTML
+CSS
+JavaScript
+Python
+Java
+C++
+PHP
+Ruby
+Swift
+Kotlin
+SQL
+NoSQL
+API
+GitHub
